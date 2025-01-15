@@ -7,11 +7,8 @@ import (
 	"time"
 
 	"github.com/bufbuild/protocompile"
-	"github.com/bufbuild/protocompile/reporter"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zaptest"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoregistry"
@@ -22,29 +19,16 @@ import (
 )
 
 func TestPlainProto(t *testing.T) {
-
 	ctx := context.Background()
 
 	filePaths := []string{
 		"shop/v2/order.proto",
 	}
 
-	logger := zaptest.NewLogger(t)
-
-	errorReporter := func(err reporter.ErrorWithPos) error {
-		position := err.GetPosition()
-		logger.Warn("failed to parse proto file to descriptor",
-			zap.String("file", position.Filename),
-			zap.Int("line", position.Line),
-			zap.Error(err))
-		return nil
-	}
-
 	compiler := protocompile.Compiler{
 		Resolver: protocompile.WithStandardImports(&protocompile.SourceResolver{
 			ImportPaths: []string{"./testdata/proto"},
 		}),
-		Reporter: reporter.NewReporter(errorReporter, nil),
 	}
 
 	compiledFiles, err := compiler.Compile(ctx, filePaths...)
@@ -92,16 +76,12 @@ func TestPlainProto(t *testing.T) {
 
 	orderCreatedAt := time.Date(2023, time.July, 15, 10, 0, 0, 0, time.UTC)
 	orderUpdatedAt := time.Date(2023, time.July, 15, 11, 0, 0, 0, time.UTC)
-	// orderDeliveredAt := time.Date(2023, time.July, 15, 12, 0, 0, 0, time.UTC)
-	// orderCompletedAt := time.Date(2023, time.July, 15, 13, 0, 0, 0, time.UTC)
 
 	expectedMsg := shopv2.Order{
 		Version:       1,
 		Id:            "444",
 		CreatedAt:     timestamppb.New(orderCreatedAt),
 		LastUpdatedAt: timestamppb.New(orderUpdatedAt),
-		// DeliveredAt:   timestamppb.New(orderDeliveredAt),
-		// CompletedAt:   timestamppb.New(orderCompletedAt),
 	}
 
 	expectData, err := proto.Marshal(&expectedMsg)
