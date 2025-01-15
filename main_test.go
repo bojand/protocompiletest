@@ -66,11 +66,11 @@ func TestPlainProto(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, actualData)
 
-	jsonData, err := marshalJSON(actualMsg, registry)
+	actualJSONData, err := marshalJSON(actualMsg, registry)
 	assert.NoError(t, err)
-	assert.NotEmpty(t, jsonData)
+	assert.NotEmpty(t, actualJSONData)
 	fmt.Println("!!! ACTUAL JSON DATA:")
-	fmt.Println(string(jsonData))
+	fmt.Println(string(actualJSONData))
 
 	// actual
 
@@ -89,11 +89,13 @@ func TestPlainProto(t *testing.T) {
 
 	assert.Equal(t, expectData, actualData)
 
-	jsonData, err = marshalJSON(&expectedMsg, registry)
+	expectedJSONData, err := marshalJSON(&expectedMsg, registry)
 	assert.NoError(t, err)
-	assert.NotEmpty(t, jsonData)
+	assert.NotEmpty(t, expectedJSONData)
 	fmt.Println("!!! EXPECTED JSON DATA:")
-	fmt.Println(string(jsonData))
+	fmt.Println(string(expectedJSONData))
+
+	assert.Equal(t, expectedJSONData, actualJSONData)
 }
 
 func marshalJSON(m proto.Message, registry *protoregistry.Types) ([]byte, error) {
