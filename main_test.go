@@ -63,7 +63,6 @@ func TestPlainProto(t *testing.T) {
 
 	// expected
 
-	// inputData := `{"version":1,"id":"444","createdAt":"2023-07-15T10:00:00Z","lastUpdatedAt":"2023-07-15T11:00:00Z","deliveredAt":"2023-07-15T12:00:00Z","completedAt":"2023-07-15T13:00:00Z"}`
 	inputData := `{"version":1,"id":"444","createdAt":"2023-07-15T10:00:00Z","lastUpdatedAt":"2023-07-15T11:00:00Z"}`
 
 	messageType, err := registry.FindMessageByURL("shop.v2.Order")
